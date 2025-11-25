@@ -1,0 +1,4 @@
+echo "18" > .nvmrc
+git add .nvmrc
+git commit -m "Use Node 18"
+git push

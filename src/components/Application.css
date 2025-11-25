@@ -1,0 +1,179 @@
+/* imported google fonts to use  */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lobster&display=swap");
+
+.application-page {
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  background: #f4fff7;
+  color: #333;
+  min-height: 100vh;
+}
+
+/* nav to home page */
+.home-nav {
+  background: #27ae60;
+  padding: 1rem;
+  text-align: left;
+}
+
+.home-button {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  background: #219150;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background 0.3s;
+}
+
+.home-button:hover {
+  background: #2ecc71;
+}
+
+/* form container */
+.container {
+  width: 90%;
+  max-width: 600px;
+  margin: 2rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.container h1 {
+  font-family: "Lobster", cursive;
+  color: #27ae60;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.container p {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+hr {
+  margin: 1rem 0;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+/* info that user enters  */
+input[type="text"],
+input[type="email"],
+select {
+  width: 100%;
+  padding: 0.7rem;
+  margin: 0.5rem 0 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+form label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+button {
+  width: 100%;
+  padding: 0.8rem;
+  background: #27ae60;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #2ecc71;
+}
+
+/* Additional form elements */
+textarea {
+  width: 100%;
+  padding: 0.7rem;
+  margin: 0.5rem 0 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.additional-location {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.additional-location input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.remove-location {
+  width: auto;
+  padding: 0.5rem 1rem;
+  background: #e74c3c;
+}
+
+.remove-location:hover {
+  background: #c0392b;
+}
+
+.add-location {
+  width: auto;
+  padding: 0.5rem 1rem;
+  margin: 0 0 1rem;
+  background: #3498db;
+}
+
+.add-location:hover {
+  background: #2980b9;
+}
+
+small {
+  display: block;
+  color: #666;
+  margin: -0.5rem 0 1rem;
+  font-size: 0.85rem;
+}
+
+input[type="file"] {
+  width: 100%;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border: 1px dashed #ccc;
+  border-radius: 6px;
+}
+
+/* Submit button specific styling */
+.submit-button {
+  display: block;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  margin-top: 1rem;
+  background: #2176bd; /* stronger blue */
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(33,118,189,0.15);
+}
+
+.submit-button:hover {
+  background: #1b5f98;
+}
+
+/* Make sure add/remove location buttons remain auto-width */
+.add-location,
+.remove-location {
+  width: auto;
+}

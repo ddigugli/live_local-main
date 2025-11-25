@@ -19,6 +19,9 @@ Netlify Deployment Steps
    - Verify the new business appears and its image loads.
    - If the image fails, inspect Console/Network and check for 403 responses (ACL issue). This repo sets public read ACL on created businesses by default.
 
+Note on Parse permissions (ACL / CLP):
+- If you encounter 403 responses when creating objects or uploading files (images), inspect your Parse Class-Level Permissions (CLP) and object ACLs. Client-side object creation and file upload can be blocked by restrictive CLP settings; ensure your Parse app allows the intended client operations or configure ACLs so the saved objects/files are readable by the public.
+
 Optional:
 - Use Netlify "Domain settings" to configure a custom domain and enable HTTPS (automatic).
 - Set branch under Site settings to control which branch triggers deploys.

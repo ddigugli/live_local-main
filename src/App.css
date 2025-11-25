@@ -132,3 +132,14 @@ nav a:hover {
     gap: 1rem;
   }
 }
+
+/* small dev banner when Parse env vars are missing */
+.parse-warning {
+  display: inline-block;
+  margin-top: 0.5rem;
+  background: #f39c12;
+  color: #fff;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}

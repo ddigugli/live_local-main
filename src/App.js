@@ -16,6 +16,7 @@ import Register from './components/Auth/Register';
 import RedirectIfAuthenticated from './components/Auth/RedirectIfAuthenticated';
 import { isAuthenticated, logout, subscribe as subscribeAuth } from './components/Auth/authService.js';
 import './App.css';
+import { isParseConfigured } from './services/parseService';
 
 function HomePage() {
   return (
@@ -79,6 +80,9 @@ function App() {
     return (
       <header className="App-header">
         <h1>Live Local</h1>
+        {process.env.NODE_ENV !== 'production' && !isParseConfigured && (
+          <div className="parse-warning">Parse not configured — running in local/fallback mode</div>
+        )}
         <nav>
           <ul className="nav-links">
             {authed ? (

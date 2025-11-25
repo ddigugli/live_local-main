@@ -156,6 +156,14 @@ export const createBusiness = async (data = {}) => {
     return saved;
   } catch (saveErr) {
     console.error('createBusiness: obj.save() failed', saveErr);
+    // Provide a helpful hint if this appears to be a permissions/ACL issue
+    try {
+      if (saveErr && (saveErr.code === 119 || saveErr.message && /permission|ACL|access/i.test(saveErr.message))) {
+        console.error('It looks like this may be a Parse permissions/ACL or CLP issue. Check your Parse Class-Level Permissions and ensure clients are allowed to create objects, or adjust ACLs appropriately.');
+      }
+    } catch (hintErr) {
+      // ignore
+    }
     throw saveErr;
   }
 };

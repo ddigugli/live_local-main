@@ -95,7 +95,24 @@ const Application = () => {
       })
       .catch((err) => {
         console.error('Error saving business:', err);
-        alert('There was a problem submitting your application. It will be saved locally.');
+        // Attempt to persist the submission locally so users don't lose their data
+        try {
+          const pendingKey = 'pendingBusinesses';
+          const existing = JSON.parse(localStorage.getItem(pendingKey) || '[]');
+          // localStorage can't reliably store File objects; strip the Image file and store its name only
+          const payloadToSave = { ...payload };
+          if (payloadToSave.Image && payloadToSave.Image.name) {
+            payloadToSave.Image = { _localFileName: payloadToSave.Image.name };
+          } else {
+            payloadToSave.Image = null;
+          }
+          existing.push(payloadToSave);
+          localStorage.setItem(pendingKey, JSON.stringify(existing));
+          alert('There was a problem submitting your application to the server. Your submission (without image) was saved locally and will be retried when the connection is available.');
+        } catch (saveErr) {
+          console.error('Failed to save application locally', saveErr);
+          alert('There was a problem submitting your application. Please try again later.');
+        }
       });
   };
 

@@ -161,13 +161,27 @@ export const getBusinessById = async (id) => {
   try {
     const obj = await findById(id);
     if (obj) {
+      // Normalize Image field so components always receive a URL (string) when possible
+      const rawImage = obj.get ? obj.get('Image') : (obj.Image || obj.image || null);
+      let imageUrl = null;
+      try {
+        if (!rawImage) imageUrl = null;
+        else if (typeof rawImage === 'string') imageUrl = rawImage;
+        else if (rawImage.url && typeof rawImage.url === 'function') imageUrl = rawImage.url();
+        else if (rawImage._url) imageUrl = rawImage._url;
+      } catch (e) {
+        // swallow image normalization errors but keep imageUrl null
+        console.warn('Image normalization failed for getBusinessById', e);
+        imageUrl = null;
+      }
+
       return {
         Name: obj.get ? obj.get('Name') : obj.Name,
         Category: obj.get ? obj.get('Category') : obj.Category,
         Keywords: obj.get ? obj.get('Keywords') : obj.Keywords,
         Address: obj.get ? obj.get('Address') : obj.Address,
         Addresses: obj.get ? obj.get('Addresses') : obj.Addresses,
-        Image: obj.get ? obj.get('Image') : (obj.Image || obj.image || null),
+        Image: imageUrl,
         objectId: obj.toJSON ? obj.toJSON().objectId : undefined,
         ...obj.toJSON ? obj.toJSON() : obj,
       };

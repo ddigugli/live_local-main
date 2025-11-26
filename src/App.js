@@ -17,6 +17,15 @@ import RedirectIfAuthenticated from './components/Auth/RedirectIfAuthenticated';
 import { isAuthenticated, logout, subscribe as subscribeAuth } from './components/Auth/authService.js';
 import './App.css';
 import { isParseConfigured } from './services/parseService';
+import CRMDashboard from './components/CRM/CRMDashboard';
+import ContactList from './components/CRM/ContactList';
+import ContactForm from './components/CRM/ContactForm';
+import DealList from './components/CRM/DealList';
+import DealForm from './components/CRM/DealForm';
+import CompanyList from './components/CRM/CompanyList';
+import CompanyForm from './components/CRM/CompanyForm';
+import TaskList from './components/CRM/TaskList';
+import TaskForm from './components/CRM/TaskForm';
 
 function HomePage() {
   return (
@@ -89,6 +98,7 @@ function App() {
               <>
                 <li><Link to="/">Home</Link></li>
                 <li><Link to="/application">Apply</Link></li>
+                <li><Link to="/crm">CRM</Link></li>
                 <li><Link to="/profile">User Profile</Link></li>
                 <li><button onClick={doLogout}>Logout</button></li>
               </>
@@ -134,6 +144,112 @@ function App() {
 
           <Route path="/results" element={<Results />} />
           <Route path="/business/:id" element={<BusinessDetail />} />
+
+          {/* CRM Routes */}
+          <Route
+            path="/crm"
+            element={
+              <ProtectedRoute>
+                <CRMDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crm/contacts"
+            element={
+              <ProtectedRoute>
+                <ContactList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crm/contacts/new"
+            element={
+              <ProtectedRoute>
+                <ContactForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crm/contacts/:id/edit"
+            element={
+              <ProtectedRoute>
+                <ContactForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crm/deals"
+            element={
+              <ProtectedRoute>
+                <DealList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crm/deals/new"
+            element={
+              <ProtectedRoute>
+                <DealForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crm/deals/:id/edit"
+            element={
+              <ProtectedRoute>
+                <DealForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crm/companies"
+            element={
+              <ProtectedRoute>
+                <CompanyList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crm/companies/new"
+            element={
+              <ProtectedRoute>
+                <CompanyForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crm/companies/:id/edit"
+            element={
+              <ProtectedRoute>
+                <CompanyForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crm/tasks"
+            element={
+              <ProtectedRoute>
+                <TaskList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crm/tasks/new"
+            element={
+              <ProtectedRoute>
+                <TaskForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crm/tasks/:id/edit"
+            element={
+              <ProtectedRoute>
+                <TaskForm />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Authentication routes */}
           <Route

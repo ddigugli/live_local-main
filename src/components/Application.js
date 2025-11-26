@@ -8,11 +8,22 @@ const Application = () => {
     email: '',
     businessName: '',
     businessType: '',
-    location: '',
-    additionalLocations: [''],
+    street: '',
+    town: '',
+    state: '',
+    zip: '',
+    additionalLocations: [],
     keywords: '',
     description: '',
     image: null
+  });
+
+  const [showAddLocationModal, setShowAddLocationModal] = useState(false);
+  const [newLocation, setNewLocation] = useState({
+    street: '',
+    town: '',
+    state: '',
+    zip: ''
   });
 
   const handleChange = (e) => {
@@ -31,27 +42,37 @@ const Application = () => {
     }
   };
 
-  const handleLocationChange = (index, value) => {
-    const newLocations = [...formData.additionalLocations];
-    newLocations[index] = value;
-    setFormData({
-      ...formData,
-      additionalLocations: newLocations
+  const handleNewLocationChange = (e) => {
+    const { name, value } = e.target;
+    setNewLocation({
+      ...newLocation,
+      [name]: value
     });
   };
 
-  const addLocationField = () => {
-    setFormData({
-      ...formData,
-      additionalLocations: [...formData.additionalLocations, '']
-    });
+  const addLocation = () => {
+    const locationString = `${newLocation.street}, ${newLocation.town}, ${newLocation.state} ${newLocation.zip}`.trim();
+    if (locationString && locationString !== ', , ,') {
+      setFormData({
+        ...formData,
+        additionalLocations: [...formData.additionalLocations, locationString]
+      });
+      setNewLocation({
+        street: '',
+        town: '',
+        state: '',
+        zip: ''
+      });
+      setShowAddLocationModal(false);
+    } else {
+      alert('Please fill in all fields for the location');
+    }
   };
 
-  const removeLocationField = (index) => {
-    const newLocations = formData.additionalLocations.filter((_, i) => i !== index);
+  const removeLocation = (index) => {
     setFormData({
       ...formData,
-      additionalLocations: newLocations
+      additionalLocations: formData.additionalLocations.filter((_, i) => i !== index)
     });
   };
 
@@ -64,14 +85,17 @@ const Application = () => {
       .map(k => k.trim())
       .filter(k => k);
 
+    // Construct primary address from street, town, state, zip
+    const primaryAddress = `${formData.street}, ${formData.town}, ${formData.state} ${formData.zip}`.trim();
+
     // Combine all addresses
-    const addresses = [formData.location, ...formData.additionalLocations.filter(loc => loc && loc.trim())];
+    const addresses = [primaryAddress, ...formData.additionalLocations];
 
     // create a Business object in Parse
     const payload = {
       Name: formData.businessName,
       Category: formData.businessType,
-      Address: formData.location,
+      Address: primaryAddress,
       Addresses: addresses,
       Keywords: [formData.businessType, ...keywordsArray],
       Description: formData.description,
@@ -86,8 +110,11 @@ const Application = () => {
           email: '',
           businessName: '',
           businessType: '',
-          location: '',
-          additionalLocations: [''],
+          street: '',
+          town: '',
+          state: '',
+          zip: '',
+          additionalLocations: [],
           keywords: '',
           description: '',
           image: null
@@ -166,73 +193,188 @@ const Application = () => {
             <option value="other">Other</option>
           </select>
 
-          <label htmlFor="location"><b>Business Location</b></label>
+          <label htmlFor="street"><b>Street Address</b></label>
           <input
             type="text"
-            placeholder="Enter Address"
-            name="location"
-            id="location"
-            value={formData.location}
+            placeholder="Enter Street Address"
+            name="street"
+            id="street"
+            value={formData.street}
             onChange={handleChange}
             required
           />
-           {/* Additional Locations */}
-           <label><b>Additional Locations</b></label>
-           {formData.additionalLocations.map((location, index) => (
-             <div key={index} className="additional-location">
-               <input
-                 type="text"
-                 placeholder="Enter Additional Address"
-                 value={location}
-                 onChange={(e) => handleLocationChange(index, e.target.value)}
-               />
-               <button 
-                 type="button" 
-                 onClick={() => removeLocationField(index)}
-                 className="remove-location"
-               >
-                 Remove
-               </button>
-             </div>
-           ))}
-           <button 
-             type="button" 
-             onClick={addLocationField}
-             className="add-location"
-           >
-             Add Another Location
-           </button>
+
+          <label htmlFor="town"><b>Town/City</b></label>
+          <input
+            type="text"
+            placeholder="Enter Town or City"
+            name="town"
+            id="town"
+            value={formData.town}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="state"><b>State</b></label>
+          <input
+            type="text"
+            placeholder="Enter State or Province"
+            name="state"
+            id="state"
+            value={formData.state}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="zip"><b>ZIP/Postal Code</b></label>
+          <input
+            type="text"
+            placeholder="Enter ZIP or Postal Code"
+            name="zip"
+            id="zip"
+            value={formData.zip}
+            onChange={handleChange}
+            required
+          />
+
+          {/* Additional Locations Section */}
+          <label><b>Additional Locations</b></label>
+          {formData.additionalLocations.length > 0 && (
+            <div className="additional-locations-list">
+              {formData.additionalLocations.map((location, index) => (
+                <div key={index} className="location-item">
+                  <span>{location}</span>
+                  <button 
+                    type="button" 
+                    onClick={() => removeLocation(index)}
+                    className="remove-location"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <button 
+            type="button" 
+            onClick={() => setShowAddLocationModal(true)}
+            className="add-location-btn"
+          >
+            + Add Additional Location
+          </button>
+
+          {/* Modal for Adding Location */}
+          {showAddLocationModal && (
+            <div className="modal-overlay">
+              <div className="modal">
+                <div className="modal-header">
+                  <h2>Add Location</h2>
+                  <button 
+                    type="button"
+                    onClick={() => setShowAddLocationModal(false)}
+                    className="close-btn"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="modal-body">
+                  <label htmlFor="new-street"><b>Street Address</b></label>
+                  <input
+                    type="text"
+                    placeholder="Enter Street Address"
+                    name="street"
+                    id="new-street"
+                    value={newLocation.street}
+                    onChange={handleNewLocationChange}
+                    required
+                  />
+
+                  <label htmlFor="new-town"><b>Town/City</b></label>
+                  <input
+                    type="text"
+                    placeholder="Enter Town or City"
+                    name="town"
+                    id="new-town"
+                    value={newLocation.town}
+                    onChange={handleNewLocationChange}
+                    required
+                  />
+
+                  <label htmlFor="new-state"><b>State</b></label>
+                  <input
+                    type="text"
+                    placeholder="Enter State or Province"
+                    name="state"
+                    id="new-state"
+                    value={newLocation.state}
+                    onChange={handleNewLocationChange}
+                    required
+                  />
+
+                  <label htmlFor="new-zip"><b>ZIP/Postal Code</b></label>
+                  <input
+                    type="text"
+                    placeholder="Enter ZIP or Postal Code"
+                    name="zip"
+                    id="new-zip"
+                    value={newLocation.zip}
+                    onChange={handleNewLocationChange}
+                    required
+                  />
+                </div>
+                <div className="modal-actions">
+                  <button 
+                    type="button" 
+                    onClick={addLocation}
+                    className="btn-primary"
+                  >
+                    Add Location
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => setShowAddLocationModal(false)}
+                    className="btn-secondary"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
  
-           <label htmlFor="keywords"><b>Keywords</b></label>
-           <input
-             type="text"
-             placeholder="Enter keywords (comma-separated)"
-             name="keywords"
-             id="keywords"
-             value={formData.keywords}
-             onChange={handleChange}
-           />
-           <small>Example: lunch, coffee, vegan, pet-friendly</small>
+          <label htmlFor="keywords"><b>Keywords</b></label>
+          <input
+            type="text"
+            placeholder="Enter keywords (comma-separated)"
+            name="keywords"
+            id="keywords"
+            value={formData.keywords}
+            onChange={handleChange}
+            required
+          />
+          <small>Example: lunch, coffee, vegan, pet-friendly</small>
  
-           <label htmlFor="description"><b>Business Description</b></label>
-           <textarea
-             placeholder="Tell us about your business..."
-             name="description"
-             id="description"
-             value={formData.description}
-             onChange={handleChange}
-             rows="4"
-           />
+          <label htmlFor="description"><b>Business Description</b></label>
+          <textarea
+            placeholder="Tell us about your business..."
+            name="description"
+            id="description"
+            value={formData.description}
+            onChange={handleChange}
+            rows="4"
+            required
+          />
  
-           <label htmlFor="image"><b>Business Image</b></label>
-           <input
-             type="file"
-             accept="image/*"
-             name="image"
-             id="image"
-             onChange={handleChange}
-           />
-           <small>Upload a photo of your business (JPEG, PNG)</small>
+          <label htmlFor="image"><b>Business Image</b></label>
+          <input
+            type="file"
+            accept="image/*"
+            name="image"
+            id="image"
+            onChange={handleChange}
+            required
+          />
+          <small>Upload a photo of your business (JPEG, PNG)</small>
 
           <button type="submit" className="submit-button">Register</button>
         </form>

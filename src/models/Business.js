@@ -5,6 +5,19 @@ import Parse from '../services/parseService.js';
 const BusinessClassName = 'Business';
 
 /**
+ * Sanitize filename by removing/replacing invalid characters
+ * Parse.File is strict about filenames; only allow alphanumeric, dots, hyphens, underscores
+ */
+const sanitizeFilename = (originalName) => {
+  if (!originalName) return 'image.jpg';
+  // Remove path separators and keep only safe characters
+  const basename = originalName.split(/[/\\]/).pop();
+  // Replace invalid characters with underscores, keep only: alphanumeric, dots, hyphens, underscores
+  const sanitized = basename.replace(/[^a-zA-Z0-9._-]/g, '_');
+  return sanitized || 'image.jpg';
+};
+
+/**
  * Helper: normalize a Parse.Object into a plain JS object.
  * - Prefers Parse.Object#get(...) when available to preserve dynamic fields.
  * - Falls back to to json() when appropriate so objectId and meta are present.
@@ -120,7 +133,9 @@ export const createBusiness = async (data = {}) => {
     const val = data[k];
     try {
       if (typeof window !== 'undefined' && (val instanceof File || val instanceof Blob)) {
-        const fileName = val.name || `${k}.jpg`;
+        const originalFileName = val.name || `${k}.jpg`;
+        const fileName = sanitizeFilename(originalFileName);
+        console.log(`Sanitizing filename: "${originalFileName}" → "${fileName}"`);
         const pfile = new Parse.File(fileName, val);
         try {
           // save Parse.File first to ensure upload; this can fail if network or ACLs block it
@@ -128,15 +143,24 @@ export const createBusiness = async (data = {}) => {
           obj.set(k, pfile);
         } catch (pfErr) {
           console.error('Parse.File save failed for', k, pfErr);
-          // fallback: still attach the Parse.File object (Parse may attempt upload on obj.save())
-          obj.set(k, pfile);
+          // If file upload is disabled or fails, skip the image but continue with business creation
+          // Log detailed error for debugging
+          if (pfErr.message && pfErr.message.includes('disabled')) {
+            console.warn(`File upload is disabled on the Parse server. Saving business without image.`);
+          } else {
+            console.warn(`Failed to upload image: ${pfErr.message}. Continuing without image.`);
+          }
+          // Don't set the image field - omit it so business can still be saved
         }
       } else {
         obj.set(k, val);
       }
     } catch (e) {
       console.error('createBusiness: error processing field', k, e);
-      obj.set(k, val);
+      // For file processing errors, skip the field but continue
+      if (!(e instanceof File || e instanceof Blob)) {
+        obj.set(k, val);
+      }
     }
   }
   // Ensure the saved business is publicly readable so uploaded images are accessible by the site
@@ -185,14 +209,20 @@ export const updateBusiness = async (id, data = {}) => {
     const val = data[k];
     try {
       if (typeof window !== 'undefined' && (val instanceof File || val instanceof Blob)) {
-        const fileName = val.name || `${k}.jpg`;
+        const originalFileName = val.name || `${k}.jpg`;
+        const fileName = sanitizeFilename(originalFileName);
+        console.log(`Sanitizing filename in update: "${originalFileName}" → "${fileName}"`);
         const pfile = new Parse.File(fileName, val);
         obj.set(k, pfile);
       } else {
         obj.set(k, val);
       }
     } catch (e) {
-      obj.set(k, val);
+      console.error('updateBusiness: error processing field', k, e);
+      // For file processing errors, skip the field but continue
+      if (!(e instanceof File || e instanceof Blob)) {
+        obj.set(k, val);
+      }
     }
   });
   return obj.save();

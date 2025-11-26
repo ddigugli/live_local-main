@@ -177,3 +177,166 @@ input[type="file"] {
 .remove-location {
   width: auto;
 }
+
+/* Modal Styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 500px;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #333;
+  font-family: "Roboto", sans-serif;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: auto;
+  transition: color 0.3s;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-body input {
+  width: 100%;
+  padding: 0.7rem;
+  margin: 0.5rem 0 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.modal-body label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.modal-body label:first-child {
+  margin-top: 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: #f8f9fa;
+  border-top: 1px solid #eee;
+}
+
+.btn-primary,
+.btn-secondary {
+  flex: 1;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.btn-primary {
+  background: #27ae60;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2ecc71;
+}
+
+.btn-secondary {
+  background: #bdc3c7;
+  color: #333;
+}
+
+.btn-secondary:hover {
+  background: #95a5a6;
+}
+
+/* Additional Locations List */
+.additional-locations-list {
+  margin: 1rem 0;
+  padding: 0;
+}
+
+.location-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 0.8rem;
+}
+
+.location-item span {
+  flex: 1;
+  color: #333;
+}
+
+.location-item .remove-location {
+  width: auto;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  margin: 0;
+  background: #e74c3c;
+  margin-left: 0.5rem;
+}
+
+.location-item .remove-location:hover {
+  background: #c0392b;
+}
+
+.add-location-btn {
+  width: auto;
+  padding: 0.7rem 1rem;
+  background: #3498db;
+  color: white;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.add-location-btn:hover {
+  background: #2980b9;
+}

@@ -2,9 +2,9 @@
 import Parse from 'parse';
 
 // Back4App credentials
-const APP_ID = process.env.REACT_APP_PARSE_APP_ID;
-const JS_KEY = process.env.REACT_APP_PARSE_JS_KEY;
-const PARSE_URL = process.env.REACT_APP_PARSE_SERVER_URL || 'https://parseapi.back4app.com/';
+const APP_ID = 'OzeGZnVRk2XBdXanHmKdT5ZGrQVcBBDFbcp1b5es'; // process.env.REACT_APP_PARSE_APP_ID
+const JS_KEY = 'WmAlAUboHcTJo3pNg72zZ5I3dQvofRQNRGvR2BDK'; // process.env.REACT_APP_PARSE_JS_KEY;
+const PARSE_URL = 'https://parseapi.back4app.com/'; // process.env.REACT_APP_PARSE_SERVER_URL || 'https://parseapi.back4app.com/';
 Parse.initialize(APP_ID, JS_KEY);
 Parse.serverURL = PARSE_URL;
 // Warn in dev if env vars are not set (helps debugging deployments)

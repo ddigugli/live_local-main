@@ -26,6 +26,7 @@ import CompanyList from './components/CRM/CompanyList';
 import CompanyForm from './components/CRM/CompanyForm';
 import TaskList from './components/CRM/TaskList';
 import TaskForm from './components/CRM/TaskForm';
+import AboutUs from './components/AboutUs';
 
 function HomePage() {
   return (
@@ -97,6 +98,7 @@ function App() {
             {authed ? (
               <>
                 <li><Link to="/">Home</Link></li>
+                <li><Link to="/about">About Us</Link></li>
                 <li><Link to="/application">Apply</Link></li>
                 <li><Link to="/crm">CRM</Link></li>
                 <li><Link to="/profile">User Profile</Link></li>
@@ -144,6 +146,15 @@ function App() {
 
           <Route path="/results" element={<Results />} />
           <Route path="/business/:id" element={<BusinessDetail />} />
+          <Route
+          // student B: added about us route
+            path="/about"
+            element={
+              <ProtectedRoute>
+                <AboutUs />
+              </ProtectedRoute>
+            }
+          />
 
           {/* CRM Routes */}
           <Route

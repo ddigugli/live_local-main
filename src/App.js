@@ -27,6 +27,7 @@ import CompanyForm from './components/CRM/CompanyForm';
 import TaskList from './components/CRM/TaskList';
 import TaskForm from './components/CRM/TaskForm';
 import AboutUs from './components/AboutUs';
+import MapboxMap from './components/mapbox/MapboxMap.jsx';
 
 function HomePage() {
   return (
@@ -54,7 +55,7 @@ function HomePage() {
       <div className="map-section">
         <h2>Location Map</h2>
         <div className="map-container">
-          <img src="/images/map_image.webp" alt="Location Map" />
+          <MapboxMap />
         </div>
       </div>
     </main>

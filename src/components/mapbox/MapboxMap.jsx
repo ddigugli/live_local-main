@@ -2,13 +2,13 @@
 import React from 'react';
 import { getAllBusinesses } from '../../services/businessService';
 import './MapboxMap.css';
+import Parse from '../../services/parseService.js';
 
-// Mapbox configuration: public token and URLs to load GL JS and its CSS at runtime
+// Mapbox config
 const MAPBOX_TOKEN = 'pk.eyJ1Ijoibm5vcnRvbjIiLCJhIjoiY21odmFlbnZhMDhrZzJscHR1aTI5NXg4ayJ9.4DRkLwbY1f5Zn9peShYHPw';
 const MAPBOX_JS = 'https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.js';
 const MAPBOX_CSS = 'https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.css';
 
-// Dynamically inject Mapbox GL JS and CSS once. Resolves with window.mapboxgl when ready.
 function ensureMapboxAssets() {
   return new Promise((resolve, reject) => {
     try {
@@ -31,9 +31,8 @@ function ensureMapboxAssets() {
   });
 }
 
-// Main map component: renders a sidebar with business listings and a Mapbox map with markers
+// Main map component - renders a sidebar with business listings and a mapbox map with markers
 const MapboxMap = () => {
-  // Ref to the map container div
   const mapRef = React.useRef(null);
   // UI error if assets fail to load
   const [error, setError] = React.useState(null);
@@ -41,12 +40,13 @@ const MapboxMap = () => {
   const [businesses, setBusinesses] = React.useState([]);
 
   React.useEffect(() => {
-    // Keep handles for cleanup
     let map;
     let markers = [];
     let mounted = true;
+    let didUserCenter = false;
 
     // Geocode a free‑form address to [lng, lat] using Mapbox Geocoding API
+
     const geocode = async (query) => {
       try {
         const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&limit=1`;
@@ -58,7 +58,7 @@ const MapboxMap = () => {
       return null;
     };
 
-    // Load Mapbox GL assets, initialize the map, then fetch businesses and add markers
+    //  initialize the map, then fetch businesses and add markers
     ensureMapboxAssets()
       .then(async (mapboxgl) => {
         if (!mounted) return;
@@ -71,13 +71,25 @@ const MapboxMap = () => {
           style: 'mapbox://styles/mapbox/streets-v12'
         });
 
+        // set start location - If the signed-in user has a location set in their profile, center/zoom to it
+        try {
+          const currentUser = Parse && Parse.User && typeof Parse.User.current === 'function' ? Parse.User.current() : null;
+          const profileLoc = currentUser && (currentUser.get ? currentUser.get('location') : currentUser.location);
+          if (profileLoc) {
+            const userCenter = await geocode(profileLoc);
+            if (mounted && userCenter) {
+              try { map.flyTo({ center: userCenter, zoom: 13.5 }); didUserCenter = true; } catch (_) {}
+            }
+          }
+        } catch (_) {}
+
         // Fetch businesses (Parse first, fallback to local JSON) and render list
         const list = await getAllBusinesses();
         if (!mounted) return;
         setBusinesses(list);
 
         const coords = [];
-        // Create a marker + popup for each business with a geocodable address
+        // Create a marker and popup for each business
         for (const b of list) {
           const name = b.Name || 'Business';
           const addr = Array.isArray(b.Addresses) && b.Addresses.length ? b.Addresses[0] : (b.Address || null);
@@ -90,8 +102,8 @@ const MapboxMap = () => {
           markers.push(m);
         }
 
-        // If we placed markers, fit map bounds to show all
-        if (coords.length) {
+        // If we placed markers and we didn't already center on the user's location, fit map bounds to show all
+        if (coords.length && !didUserCenter) {
           const bounds = new mapboxgl.LngLatBounds();
           coords.forEach((c) => bounds.extend(c));
           try { map.fitBounds(bounds, { padding: 60, maxZoom: 14 }); } catch(_) {}
@@ -99,7 +111,7 @@ const MapboxMap = () => {
       })
       .catch((e) => setError(e?.message || 'Failed to load map'));
 
-    // Cleanup: remove markers and map when component unmounts
+    // remove markers and map when component unmounts
     return () => {
       mounted = false;
       try { markers.forEach((m) => m.remove()); } catch(_) {}
@@ -107,7 +119,7 @@ const MapboxMap = () => {
     };
   }, []);
 
-  // Layout: sidebar (listings) + map container
+// layout - sidebar (listings) + map container
   return (
     <div className="mapbox-wrapper">
       {error && (
@@ -115,7 +127,7 @@ const MapboxMap = () => {
       )}
       <aside className="mapbox-sidebar">
         {/* Listings header with count */}
-        <h3>Local Businesses nearby: {businesses.length}</h3>
+        <h3>Local Businesses: {businesses.length}</h3>
         <div>
           {businesses.map((b, idx) => {
             const addr = Array.isArray(b.Addresses) && b.Addresses.length ? b.Addresses[0] : (b.Address || '');

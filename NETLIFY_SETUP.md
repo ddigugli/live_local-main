@@ -8,8 +8,8 @@ Netlify Deployment Steps
    - Set publish directory: `build`
 
 3. Add environment variables (Site settings -> Build & deploy -> Environment):
-   - REACT_APP_PARSE_APP_ID = <your Back4App Application ID>
-   - REACT_APP_PARSE_JS_KEY = <your Back4App JavaScript Key>
+   - REACT_APP_PARSE_APP_ID=OzeGZnVRk2XBdXanHmKdT5ZGrQVcBBDFbcp1b5es
+   - REACT_APP_PARSE_JS_KEY=WmAlAUboHcTJo3pNg72zZ5I3dQvofRQNRGvR2BDK
    - REACT_APP_PARSE_SERVER_URL = https://parseapi.back4app.com/
 
 4. Deploy. Netlify will build and publish the site. For SPA routing, a `netlify.toml` with a redirect to `/index.html` is included in the repo.

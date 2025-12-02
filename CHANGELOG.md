@@ -40,6 +40,18 @@ All notable changes to this project will be documented in this file.
 - Styled category tiles ("Cafes, Lunch Places, Other") to match business card design
 - Category tiles now have centered text overlays with dark gradient background
 - Improved hover effects: cards translate upward (-4px) instead of scale
+- Resized search bar 
+
+### Website Backend Improvements 
+- Updated suggested categories to include busineses with keywords associated with the category - done by updating Businessservice to expand the search space for a given keyword
+- Created an AboutUs page explaining the puroose of Live Local and how it works
+
+### Map & Geolocation
+- Added Mapbox components and connected to MapBox API creating an interactive map 
+- Mapbox map now centers and zooms to the signed-in user's profile `location` (e.g., city or address).
+- If geocoding fails or `location` is not set, the map falls back to fitting bounds around all business markers.
+- Added guard to avoid re-fitting bounds when the map has already centered on the user's location.
+- Implementation in `src/components/mapbox/MapboxMap.jsx` (imports `Parse` and geocodes `location`).
 
 ### Testing & Documentation
 - Created comprehensive integration and unit test suite (77 test cases)

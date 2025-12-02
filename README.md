@@ -48,13 +48,13 @@ Create a `.env.local` file in the project root (see `.env.example` for template)
 
 ```bash
 # Parse configuration (Back4App)
-REACT_APP_PARSE_APP_ID=your_app_id_here
-REACT_APP_PARSE_JS_KEY=your_js_key_here
+REACT_APP_PARSE_APP_ID=OzeGZnVRk2XBdXanHmKdT5ZGrQVcBBDFbcp1b5es
+REACT_APP_PARSE_JS_KEY=WmAlAUboHcTJo3pNg72zZ5I3dQvofRQNRGvR2BDK
 REACT_APP_PARSE_SERVER_URL=https://parseapi.back4app.com/
 
 # Cloudinary configuration (for image uploads)
-REACT_APP_CLOUDINARY_CLOUD_NAME=your_cloud_name
-REACT_APP_CLOUDINARY_PRESET=your_upload_preset
+REACT_APP_CLOUDINARY_CLOUD_NAME=dezroqels
+REACT_APP_CLOUDINARY_PRESET=live_local_uploads
 ```
 
 For detailed Cloudinary setup, see [CLOUDINARY_SETUP.md](./CLOUDINARY_SETUP.md).

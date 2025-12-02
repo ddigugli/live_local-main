@@ -12,6 +12,50 @@ import {
 // path to JSON data (fallback)
 const DATA_URL = "/local_business_data.json";
 
+// Centralized alias mapping for suggested categories.
+// Keys are used for GuessedCategory to put a business in a category
+const CATEGORY_ALIASES = {
+  cafe: [
+    'cafe', 'cafes', 'coffee', 'espresso', 'latte', 'mocha', 'americano',
+    'coffee shop', 'coffeeshop', 'barista'
+  ],
+  lunch: [
+    'lunch', 'sandwich', 'sandwiches', 'deli', 'salad', 'salads', 'wrap', 'wraps',
+    'soup'
+  ],
+  entertainment: [
+    'entertainment', 'movie', 'movies', 'cinema', 'theater', 'theatre', 'arcade',
+    'bowling', 'mini golf', 'concert', 'music', 'art', 'pottery'
+  ],
+};
+
+// Given an input keyword, return the canonical category (e.g., 'cafe') if it
+// matches any alias; otherwise null.
+const resolveCategoryFromKeyword = (kw) => {
+  const l = String(kw || '').trim().toLowerCase();
+  if (!l) return null;
+  for (const [cat, terms] of Object.entries(CATEGORY_ALIASES)) {
+    if (terms.some(t => t.toLowerCase() === l)) return cat;
+  }
+  return null;
+};
+
+// Expand the search space for a given keyword: include the keyword itself,
+// its basic singular/plural variants, and any aliases from CATEGORY_ALIASES
+// if it maps to a canonical category.
+const expandTermsForKeyword = (kw) => {
+  const base = String(kw || '').trim().toLowerCase();
+  if (!base) return [];
+  const sing = base.endsWith('s') ? base.slice(0, -1) : base;
+  const plur = base.endsWith('s') ? base : base + 's';
+  const terms = new Set([base, sing, plur]);
+  const canonical = resolveCategoryFromKeyword(base);
+  if (canonical && CATEGORY_ALIASES[canonical]) {
+    CATEGORY_ALIASES[canonical].forEach(t => terms.add(t.toLowerCase()));
+  }
+  return Array.from(terms);
+};
+
 // helper: fetch from local JSON (used as fallback)
 // local json is useful during development when Parse is not reachable
 const fetchLocalBusinesses = () => {
@@ -87,6 +131,7 @@ export const getBusinessesByKeyword = async (keyword) => {
       return null;
     };
 
+    const canonical = resolveCategoryFromKeyword(keyword);
     const mapped = results.map((obj) => ({
       Name: obj.get ? obj.get('Name') : obj.Name,
       Category: obj.get ? obj.get('Category') : obj.Category,
@@ -97,6 +142,7 @@ export const getBusinessesByKeyword = async (keyword) => {
        Image: obj.get ? (obj.get('ImageURL') || normalizeImage(obj.get('Image'))) : (obj.ImageURL || normalizeImage(obj.Image || obj.image || null)),
       objectId: obj.toJSON ? obj.toJSON().objectId : undefined,
       ...obj.toJSON ? obj.toJSON() : obj,
+      ...(canonical ? { GuessedCategory: canonical } : {}),
     }));
 
     // If Parse returned results, use them. If Parse returned an empty array, fall back to local filtering
@@ -111,44 +157,51 @@ export const getBusinessesByKeyword = async (keyword) => {
     });
     const businesses = await getAllBusinesses();
     if (!businesses) return [];
-    // Prepare variations of the keyword (singular/plural)
-    const keywordLower = keyword.toLowerCase();
-    const keywordSingular = keywordLower.endsWith('s') ? keywordLower.slice(0, -1) : keywordLower;
-    const keywordPlural = keywordLower.endsWith('s') ? keywordLower : keywordLower + 's';
-    
-    return businesses.filter((b) => {
+    const terms = expandTermsForKeyword(keyword);
+    const termsSet = new Set(terms);
+    const filtered = businesses.filter((b) => {
       if (!b.Keywords) return false;
-
+      const check = (val) => {
+        const v = String(val || '').toLowerCase();
+        if (!v) return false;
+        // match exact alias terms or substring includes
+        if (termsSet.has(v)) return true;
+        return terms.some(t => v.includes(t));
+      };
       if (Array.isArray(b.Keywords)) {
-        return b.Keywords.some((k) => {
-          const kLower = String(k).toLowerCase();
-          return kLower === keywordLower || 
-                 kLower === keywordSingular || 
-                 kLower === keywordPlural || 
-                 kLower.includes(keywordLower);
-        });
+        return b.Keywords.some(check);
       }
-
-      const bKeywordsLower = String(b.Keywords).toLowerCase();
-      return bKeywordsLower.includes(keywordLower) || 
-             bKeywordsLower.includes(keywordSingular) || 
-             bKeywordsLower.includes(keywordPlural);
+      return check(b.Keywords);
     });
+    const canonical = resolveCategoryFromKeyword(keyword);
+    return filtered.map(b => ({
+      ...b,
+      ...(canonical ? { GuessedCategory: canonical } : {}),
+    }));
   }
   // If the Parse path didn't throw but returned zero results, do the same local fallback
   const businesses = await getAllBusinesses();
   if (!businesses) return [];
-  return businesses.filter((b) => {
+  const terms = expandTermsForKeyword(keyword);
+  const termsSet = new Set(terms);
+  const filtered2 = businesses.filter((b) => {
     if (!b.Keywords) return false;
-
+    const check = (val) => {
+      const v = String(val || '').toLowerCase();
+      if (!v) return false;
+      if (termsSet.has(v)) return true;
+      return terms.some(t => v.includes(t));
+    };
     if (Array.isArray(b.Keywords)) {
-      return b.Keywords.some((k) =>
-        String(k).toLowerCase().includes(keyword.toLowerCase())
-      );
+      return b.Keywords.some(check);
     }
-
-    return String(b.Keywords).toLowerCase().includes(keyword.toLowerCase());
+    return check(b.Keywords);
   });
+  const canonical = resolveCategoryFromKeyword(keyword);
+  return filtered2.map(b => ({
+    ...b,
+    ...(canonical ? { GuessedCategory: canonical } : {}),
+  }));
 };
 
 /**

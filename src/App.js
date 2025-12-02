@@ -45,9 +45,9 @@ function HomePage() {
               <img src="/images/sanwich.jpg" alt="Lunch Places" />
               <div className="image-caption">Lunch Places</div>
             </Link>
-            <Link to="/results?keyword=Other" className="image-container">
-              <img src="/images/clothes_picture.jpg" alt="Other" />
-              <div className="image-caption">Other</div>
+            <Link to="/results?keyword=Entertainment" className="image-container">
+              <img src="/images/movietheater.png" alt="Entertainment" />
+              <div className="image-caption">Entertainment</div>
             </Link>
           </div>
         </div>

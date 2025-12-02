@@ -63,7 +63,7 @@ const BusinessList = () => {
           id="search-input"
           name="search"
           className="search-input"
-          placeholder="Search for local restaurants"
+          placeholder="Search for local businesses"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyPress={handleKeyPress}

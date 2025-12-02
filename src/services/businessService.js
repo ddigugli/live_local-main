@@ -51,7 +51,8 @@ export const getAllBusinesses = async () => {
       Keywords: obj.get ? obj.get('Keywords') : obj.Keywords,
       Address: obj.get ? obj.get('Address') : obj.Address,
       Addresses: obj.get ? obj.get('Addresses') : obj.Addresses,
-      Image: normalizeImage(obj.get ? obj.get('Image') : (obj.Image || obj.image || null)),
+       // Prefer ImageURL (Cloudinary) over Image (Parse.File)
+       Image: obj.get ? (obj.get('ImageURL') || normalizeImage(obj.get('Image'))) : (obj.ImageURL || normalizeImage(obj.Image || obj.image || null)),
       objectId: obj.toJSON ? obj.toJSON().objectId : undefined,
       // include any other fields from toJSON (objectId, createdAt etc.)
       ...obj.toJSON ? obj.toJSON() : obj,
@@ -92,7 +93,8 @@ export const getBusinessesByKeyword = async (keyword) => {
       Keywords: obj.get ? obj.get('Keywords') : obj.Keywords,
       Address: obj.get ? obj.get('Address') : obj.Address,
       Addresses: obj.get ? obj.get('Addresses') : obj.Addresses,
-      Image: normalizeImage(obj.get ? obj.get('Image') : (obj.Image || obj.image || null)),
+       // Prefer ImageURL (Cloudinary) over Image (Parse.File)
+       Image: obj.get ? (obj.get('ImageURL') || normalizeImage(obj.get('Image'))) : (obj.ImageURL || normalizeImage(obj.Image || obj.image || null)),
       objectId: obj.toJSON ? obj.toJSON().objectId : undefined,
       ...obj.toJSON ? obj.toJSON() : obj,
     }));
@@ -181,7 +183,8 @@ export const getBusinessById = async (id) => {
         Keywords: obj.get ? obj.get('Keywords') : obj.Keywords,
         Address: obj.get ? obj.get('Address') : obj.Address,
         Addresses: obj.get ? obj.get('Addresses') : obj.Addresses,
-        Image: imageUrl,
+         // Prefer ImageURL (Cloudinary) over Image (Parse.File)
+         Image: (obj.get ? obj.get('ImageURL') : obj.ImageURL) || imageUrl,
         objectId: obj.toJSON ? obj.toJSON().objectId : undefined,
         ...obj.toJSON ? obj.toJSON() : obj,
       };
@@ -218,7 +221,8 @@ export const getBusinessesByCategory = async (category) => {
       Keywords: obj.get ? obj.get('Keywords') : obj.Keywords,
       Address: obj.get ? obj.get('Address') : obj.Address,
       Addresses: obj.get ? obj.get('Addresses') : obj.Addresses,
-        Image: (function(img){
+         // Prefer ImageURL (Cloudinary) over Image (Parse.File)
+         Image: (obj.get ? obj.get('ImageURL') : obj.ImageURL) || (function(img){
           if (!img) return null;
           try{
             if (typeof img === 'string') return img;

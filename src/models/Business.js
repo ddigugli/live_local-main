@@ -21,6 +21,7 @@ const sanitizeFilename = (originalName) => {
  * Helper: normalize a Parse.Object into a plain JS object.
  * - Prefers Parse.Object#get(...) when available to preserve dynamic fields.
  * - Falls back to to json() when appropriate so objectId and meta are present.
+ * - Supports ImageURL (from Cloudinary) and Image (from Parse.File)
   */
 const toPlain = (obj) => {
   if (!obj) return null;
@@ -32,6 +33,7 @@ const toPlain = (obj) => {
     Keywords: obj.get ? obj.get('Keywords') : json.Keywords,
     Address: obj.get ? obj.get('Address') : json.Address,
     Addresses: obj.get ? obj.get('Addresses') : json.Addresses,
+    ImageURL: obj.get ? obj.get('ImageURL') : json.ImageURL,
   };
 };
 

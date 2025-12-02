@@ -8,13 +8,10 @@ const BusinessCard = ({ business }) => {
   return (
     <Link to={`/business/${id}`} className="business-card-link">
       <div className="business-card">
-        <div className="card-image" style={{ backgroundImage: `url(${business.Image || '/images/coffee.jpg'})` }} />
-        <div className="card-body">
-          <h3>{business.Name || "Unnamed Business"}</h3>
-          <p className="address"><strong>Address:</strong> {
-            business.Address || (business.Addresses ? business.Addresses.join(", ") : "N/A")
-          }</p>
-        </div>
+  {/* Card shows only the photo with the business name overlaid at the top */}
+  <div className="card-image" style={{ backgroundImage: `url(${business.Image || business.ImageURL || '/images/coffee.jpg'})` }}>
+    <div className="card-title-overlay">{business.Name || 'Unnamed Business'}</div>
+  </div>
       </div>
     </Link>
   );

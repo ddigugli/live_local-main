@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Application.css';
 import { createBusiness } from '../models/Business.js';
+import { uploadToCloudinary, isCloudinaryConfigured } from '../services/cloudinaryService.js';
 
 const Application = () => {
   const [formData, setFormData] = useState({
@@ -25,6 +26,8 @@ const Application = () => {
     state: '',
     zip: ''
   });
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -78,6 +81,8 @@ const Application = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setUploadError('');
+    setIsUploading(true);
 
     // Parse keywords into an array, removing empty strings
     const keywordsArray = formData.keywords
@@ -91,20 +96,41 @@ const Application = () => {
     // Combine all addresses
     const addresses = [primaryAddress, ...formData.additionalLocations];
 
-    // create a Business object in Parse
-    const payload = {
-      Name: formData.businessName,
-      Category: formData.businessType,
-      Address: primaryAddress,
-      Addresses: addresses,
-      Keywords: [formData.businessType, ...keywordsArray],
-      Description: formData.description,
-      Image: formData.image
-    };
+    // Upload image to Cloudinary if configured and image is provided
+    const uploadPromise = formData.image && isCloudinaryConfigured()
+      ? uploadToCloudinary(formData.image)
+          .then(imageUrl => {
+            console.log('Image uploaded to Cloudinary:', imageUrl);
+            return imageUrl;
+          })
+          .catch(err => {
+            console.warn('Cloudinary upload failed, continuing without image:', err);
+            setUploadError('Image upload failed. Your business will be registered without an image.');
+            return null;
+          })
+      : Promise.resolve(null);
 
-    createBusiness(payload)
+    uploadPromise
+      .then((imageUrl) => {
+        console.log('Cloudinary upload result (imageUrl):', imageUrl);
+        // create a Business object in Parse
+        const payload = {
+          Name: formData.businessName,
+          Category: formData.businessType,
+          Address: primaryAddress,
+          Addresses: addresses,
+          Keywords: [formData.businessType, ...keywordsArray],
+          Description: formData.description,
+          ImageURL: imageUrl, // Store Cloudinary URL
+          Image: null // Don't send File object to Parse
+        };
+        console.log('Business payload being sent to createBusiness():', payload);
+
+        return createBusiness(payload);
+      })
       .then((saved) => {
         console.log('Saved business:', saved.toJSON());
+        setIsUploading(false);
         alert('Thank you — your business application was submitted.');
         setFormData({
           email: '',
@@ -119,26 +145,30 @@ const Application = () => {
           description: '',
           image: null
         });
+        setUploadError('');
       })
       .catch((err) => {
         console.error('Error saving business:', err);
+        setIsUploading(false);
         // Attempt to persist the submission locally so users don't lose their data
         try {
           const pendingKey = 'pendingBusinesses';
           const existing = JSON.parse(localStorage.getItem(pendingKey) || '[]');
-          // localStorage can't reliably store File objects; strip the Image file and store its name only
-          const payloadToSave = { ...payload };
-          if (payloadToSave.Image && payloadToSave.Image.name) {
-            payloadToSave.Image = { _localFileName: payloadToSave.Image.name };
-          } else {
-            payloadToSave.Image = null;
-          }
+          const payloadToSave = {
+            Name: formData.businessName,
+            Category: formData.businessType,
+            Address: primaryAddress,
+            Addresses: addresses,
+            Keywords: [formData.businessType, ...keywordsArray],
+            Description: formData.description,
+            ImageURL: null
+          };
           existing.push(payloadToSave);
           localStorage.setItem(pendingKey, JSON.stringify(existing));
-          alert('There was a problem submitting your application to the server. Your submission (without image) was saved locally and will be retried when the connection is available.');
+          setUploadError('Server error. Your submission was saved locally and will be retried when connection is available.');
         } catch (saveErr) {
           console.error('Failed to save application locally', saveErr);
-          alert('There was a problem submitting your application. Please try again later.');
+          setUploadError('There was a problem submitting your application. Please try again later.');
         }
       });
   };
@@ -153,6 +183,12 @@ const Application = () => {
         <h1>Add your business to our map!</h1>
         <p>Please fill in this form to add your local business to our map</p>
         <hr />
+
+        {uploadError && (
+          <div className="error-message">
+            {uploadError}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <label htmlFor="email"><b>Email</b></label>
@@ -376,7 +412,9 @@ const Application = () => {
           />
           <small>Upload a photo of your business (JPEG, PNG)</small>
 
-          <button type="submit" className="submit-button">Register</button>
+          <button type="submit" className="submit-button" disabled={isUploading}>
+            {isUploading ? 'Uploading...' : 'Register'}
+          </button>
         </form>
       </div>
     </div>

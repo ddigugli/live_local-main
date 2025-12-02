@@ -81,13 +81,14 @@ const BusinessDetail = () => {
     <div className="container">
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
         <div style={{ flex: '0 0 260px' }}>
-          <img src={business.Image || '/images/pizza.jpg'} alt={business.Name} style={{ width: '100%', borderRadius: 8 }} />
+          {/* Prefer Image (normalized URL) but fall back to ImageURL for Cloudinary links */}
+          <img src={business.Image || business.ImageURL || '/images/pizza.jpg'} alt={business.Name} style={{ width: '100%', borderRadius: 8 }} />
         </div>
         <div style={{ flex: 1 }}>
           <h1>{business.Name}</h1>
           <p><strong>Category:</strong> {business.Category}</p>
           <p><strong>Address:</strong> {business.Address || (business.Addresses ? business.Addresses.join(', ') : '—')}</p>
-          <p><strong>Keywords:</strong> {(business.Keywords || []).join ? (business.Keywords.join(', ')) : (business.Keywords || '—')}</p>
+          <p><strong>Description:</strong> {business.Description || business.description || '—'}</p>
         </div>
       </div>
 

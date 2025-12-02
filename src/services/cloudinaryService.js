@@ -72,8 +72,10 @@ export const getCloudinaryUrl = (publicId, transformations = {}) => {
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${transformString}/v1/${publicId}`;
 };
 
-export default {
+const cloudinaryService = {
   isCloudinaryConfigured,
   uploadToCloudinary,
   getCloudinaryUrl
 };
+
+export default cloudinaryService;

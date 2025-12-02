@@ -1,46 +1,213 @@
-# Partners:
-Drew DiGuglielmo and Nancy Norton
+# Live Local
 
-# Getting Started with Create React App
+A web application to discover and support local businesses in your community.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Partners:** Drew DiGuglielmo and Nancy Norton
 
-## Available Scripts
+## Overview
 
-In the project directory, you can run:
+Live Local helps users discover local businesses (cafes, restaurants, shops, services) and leave reviews. Business owners can submit their businesses to appear on the platform. The app includes a simple CRM tool for managing customer interactions.
 
-### `npm install`
+### Key Features
 
-This will install dependencies needed to run our app
+- **Browse Local Businesses**: Search and filter by category (Cafes, Lunch, Other) or keyword
+- **Business Listings**: View businesses with photos, descriptions, addresses, and reviews
+- **User Authentication**: Sign up, log in, manage your profile
+- **Leave Reviews**: Rate and review businesses you've visited
+- **Business Registration**: Submit your business to the platform with photos (via Cloudinary)
+- **CRM Tool**: Manage contacts, companies, deals, and tasks
+- **Mapbox Integration**: View businesses on an interactive map
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Frontend**: React 19, react-router-dom v7.9.4, Create React App 5
+- **Backend**: Parse (Back4App) v3.5.1
+- **Image Hosting**: Cloudinary (free tier)
+- **Testing**: Jest + React Testing Library
+- **Styling**: CSS3 (global + component-scoped)
+- **Deployment**: Netlify with automatic builds from main branch
 
-The page will reload when you make changes.\
+## Getting Started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about
+- Node.js (v14+) and npm
+- Cloudinary account (free tier) for image uploads
+- Back4App account with Parse database
+- Mapbox account (optional, for map features)
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Environment Variables
 
-See the section about
+Create a `.env.local` file in the project root (see `.env.example` for template):
 
-### `npm run eject`
+```bash
+# Parse configuration (Back4App)
+REACT_APP_PARSE_APP_ID=your_app_id_here
+REACT_APP_PARSE_JS_KEY=your_js_key_here
+REACT_APP_PARSE_SERVER_URL=https://parseapi.back4app.com/
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Cloudinary configuration (for image uploads)
+REACT_APP_CLOUDINARY_CLOUD_NAME=your_cloud_name
+REACT_APP_CLOUDINARY_PRESET=your_upload_preset
+```
 
-You can `eject` at any time. This command will remove the single build dependency from your project.
+For detailed Cloudinary setup, see [CLOUDINARY_SETUP.md](./CLOUDINARY_SETUP.md).
 
-# Now you are ready to go!
+### Running Locally
 
-Feel free to traverse our site, look at restaurants, add your own, make a profile, and more!
+```bash
+npm start
+```
+
+Runs the app in development mode. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+The page will auto-reload when you make changes.
+
+### Running Tests
+
+```bash
+npm test
+```
+
+Launches Jest in interactive watch mode. Tests cover Parse integration, components, business logic, and authentication.
+
+For test details, see [TESTING.md](./TESTING.md).
+
+### Building for Production
+
+```bash
+npm run build
+```
+
+Builds the app for production to the `build` folder with optimization and minification.
+
+### Deployment
+
+The app is configured for automatic deployment to Netlify. When deploying:
+
+1. Add environment variables in Netlify **Site settings → Build & Deploy → Environment**:
+   - `REACT_APP_PARSE_APP_ID`
+   - `REACT_APP_PARSE_JS_KEY`
+   - `REACT_APP_PARSE_SERVER_URL`
+   - `REACT_APP_CLOUDINARY_CLOUD_NAME`
+   - `REACT_APP_CLOUDINARY_PRESET`
+
+2. Push to `main` branch to trigger automatic build and deployment.
+
+See [NETLIFY_SETUP.md](./NETLIFY_SETUP.md) for complete deployment guide.
+
+## Project Structure
+
+```
+src/
+  components/
+    Auth/               # Authentication (login, register, protected routes)
+    Application.js      # Business registration form
+    BusinessCard.js     # Business tile component
+    BusinessDetail.js   # Business detail view
+    BusinessList.js     # Business listing with search
+    Profile.js          # User profile management
+    Results.js          # Search results page
+    CRM/                # Customer relationship management tools
+  models/
+    Business.js         # Parse Business CRUD operations
+    Profile.js          # Parse Profile CRUD operations
+    Review.js           # Parse Review CRUD operations
+  services/
+    authService.js      # Authentication utilities
+    businessService.js  # Business queries and normalization
+    cloudinaryService.js # Cloudinary image upload
+    parseService.js     # Parse SDK initialization
+  App.js               # Main app routing
+  App.css              # Global styles
+```
+
+## Features in Detail
+
+### Image Uploads (Cloudinary)
+
+Business images are uploaded directly to Cloudinary (free tier CDN). The app:
+- Uploads images client-side via unsigned preset (no backend auth needed)
+- Stores the Cloudinary secure_url in Parse
+- Falls back to placeholder images if upload fails
+- Automatically sanitizes filenames for safety
+
+See [CLOUDINARY_SETUP.md](./CLOUDINARY_SETUP.md) for setup instructions.
+
+### Testing
+
+Comprehensive test suite (77 test cases) covering:
+- Parse SDK integration
+- Business model (CRUD, search, filtering)
+- Application form validation and submission
+- Authentication (signup, login, logout)
+
+Run `npm test` to verify functionality.
+
+See [TESTING.md](./TESTING.md) for detailed test documentation.
+
+### CRM Tool
+
+Manage customer relationships with:
+- Contact list and creation
+- Company management
+- Deal tracking
+- Task scheduling
+- Activity logging
+
+Accessible via **CRM Dashboard** (authenticated users only).
+
+## Troubleshooting
+
+### Images Not Uploading
+
+1. Verify Cloudinary env vars are set in `.env.local` or Netlify
+2. Check that your Cloudinary preset is set to "Unsigned" mode
+3. See [CLOUDINARY_SETUP.md](./CLOUDINARY_SETUP.md) for full setup
+
+### Parse Connection Errors
+
+1. Verify Back4App credentials in `.env.local`
+2. Check that Parse classes (Business, Profile, Review) exist in Back4App dashboard
+3. Ensure Class-Level Permissions allow client creation/reads
+
+### Tests Failing
+
+Run `npm test` to see detailed error messages. Most failures are due to:
+- Missing env vars in setupTests.js (mock values)
+- Parse SDK not initialized (check parseService.js imports)
+- Component dependencies not installed (run `npm install`)
+
+## Documentation
+
+- [CHANGELOG.md](./CHANGELOG.md) - Version history and feature updates
+- [CLOUDINARY_SETUP.md](./CLOUDINARY_SETUP.md) - Image hosting setup guide
+- [NETLIFY_SETUP.md](./NETLIFY_SETUP.md) - Deployment instructions
+- [TESTING.md](./TESTING.md) - Test suite documentation
+- [CRM_SETUP.md](./CRM_SETUP.md) - CRM feature setup (Parse classes)
+
+## Contributing
+
+To contribute:
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Commit changes: `git commit -am 'Add your feature'`
+3. Push to GitHub: `git push origin feature/your-feature`
+4. Open a Pull Request
+
+## License
+
+This project is open source and available under the MIT License.
+
+## Support
+
+For issues or questions, please open a GitHub issue or contact the maintainers.
+
+---
+
+**Happy exploring! Discover and support local businesses in your community. 🚀**

@@ -113,7 +113,7 @@ button,
 input[type="submit"] {
   width: 100%;
   padding: 0.8rem;
-  background: #2980b9;
+  background: #5fa9db;
   color: white;
   font-weight: bold;
   border: none;
@@ -124,7 +124,7 @@ input[type="submit"] {
 
 button:hover,
 input[type="submit"]:hover {
-  background: #3498db;
+  background: #4b8fb6;
 }
 
 /* Small utility for half-width buttons when required */

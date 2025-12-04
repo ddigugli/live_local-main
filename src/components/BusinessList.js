@@ -7,11 +7,14 @@ const BusinessList = () => {
   const [businesses, setBusinesses] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const businessesPerPage = 9;
 
   // load all businesses on component mount
   useEffect(() => {
     const loadBusinesses = async () => {
       setIsLoading(true);
+      setCurrentPage(1); // Reset to first page
       try {
         const allBusinesses = await getAllBusinesses();
         setBusinesses(allBusinesses);
@@ -29,12 +32,14 @@ const BusinessList = () => {
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
       // If search is empty, load all businesses
+      setCurrentPage(1); // Reset to first page
       const allBusinesses = await getAllBusinesses();
       setBusinesses(allBusinesses);
       return;
     }
 
     setIsLoading(true);
+    setCurrentPage(1); // Reset to first page
     try {
       const results = await getBusinessesByKeyword(searchQuery.trim());
       setBusinesses(results);
@@ -49,6 +54,26 @@ const BusinessList = () => {
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
+    }
+  };
+
+  // Calculate pagination
+  const indexOfLastBusiness = currentPage * businessesPerPage;
+  const indexOfFirstBusiness = indexOfLastBusiness - businessesPerPage;
+  const currentBusinesses = businesses.slice(indexOfFirstBusiness, indexOfLastBusiness);
+  const totalPages = Math.ceil(businesses.length / businessesPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      window.scrollTo(0, 0); // Scroll to top
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      window.scrollTo(0, 0); // Scroll to top
     }
   };
 
@@ -79,11 +104,36 @@ const BusinessList = () => {
         {businesses.length === 0 && !isLoading ? (
           <p>No businesses found.</p>
         ) : (
-          businesses.map((business, index) => (
+          currentBusinesses.map((business, index) => (
             <BusinessCard key={index} business={business} />
           ))
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {businesses.length > 0 && !isLoading && (
+        <div className="pagination-controls">
+          <button 
+            onClick={handlePreviousPage} 
+            disabled={currentPage === 1}
+            className="pagination-btn"
+          >
+            ← Previous
+          </button>
+          
+          <div className="pagination-info">
+            Page {currentPage} of {totalPages}
+          </div>
+          
+          <button 
+            onClick={handleNextPage} 
+            disabled={currentPage === totalPages}
+            className="pagination-btn"
+          >
+            Next →
+          </button>
+        </div>
+      )}
     </div>
   );
 };

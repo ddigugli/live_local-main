@@ -3,6 +3,11 @@
 .mapbox-error{position:absolute;top:8px;left:8px;z-index:2;padding:.5rem .75rem;background:#fff;color:crimson;border:1px solid #f3d;border-radius:6px}
 .mapbox-sidebar{width:28%;min-width:220px;height:100%;overflow-y:auto;background:#f4f3e7;padding:.75rem 1rem}
 .mapbox-sidebar h3{margin:0 0 .5rem 0}
+.mapbox-search{display:grid;grid-template-columns:1fr max-content;column-gap:.5rem;margin-bottom:.5rem;align-items:center;justify-items:start}
+.mapbox-search input{min-width:0;width:100%;padding:.45rem .6rem;border:1px solid #cfcab5;border-radius:6px;background:#fff;display:block;box-sizing:border-box}
+.mapbox-search button{padding:.35rem .6rem;background:#27ae60;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.9rem;width:auto;white-space:nowrap;justify-self:start}
+.mapbox-search button:hover{background:#1f8e4f}
+.mapbox-search__nores{margin:.25rem 0 .5rem 0;color:#a94442;background:#f2dede;border:1px solid #ebccd1;border-radius:6px;padding:.35rem .5rem;font-size:.9rem}
 .mapbox-listing{padding:.5rem 0;border-bottom:1px solid #ddd}
 .mapbox-listing .name{font-weight:600}
 .mapbox-listing .addr{font-size:13px;color:#555}

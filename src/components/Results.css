@@ -1,6 +1,14 @@
 /* imported google fonts */
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lobster&display=swap");
 
+/* Orange color scheme to match logo */
+:root {
+  --primary-orange: #ff8c42;
+  --dark-orange: #ff6b1a;
+  --light-orange: #ffb380;
+  --accent-orange: #ff9f43;
+}
+
 .results-page {
   margin: 0;
   padding: 0;
@@ -12,7 +20,7 @@
 
 /* home button nav */
 .home-nav {
-  background: #27ae60;
+  background: var(--primary-orange);
   padding: 1rem;
   text-align: left;
 }
@@ -21,14 +29,14 @@
   color: white;
   text-decoration: none;
   font-weight: bold;
-  background: #219150;
+  background: var(--dark-orange);
   padding: 0.5rem 1rem;
   border-radius: 6px;
   transition: background 0.3s;
 }
 
 .home-button:hover {
-  background: #2ecc71;
+  background: var(--light-orange);
 }
 
 /* container */

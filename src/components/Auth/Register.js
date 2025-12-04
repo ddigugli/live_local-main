@@ -48,7 +48,6 @@ const Register = () => {
         <p>Register to access the Live Local app.</p>
         <hr />
 
-
         <form onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-group">

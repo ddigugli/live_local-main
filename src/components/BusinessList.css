@@ -5,6 +5,14 @@
   padding: 1rem;
 }
 
+/* Orange color scheme to match logo */
+:root {
+  --primary-orange: #ff8c42;
+  --dark-orange: #ff6b1a;
+  --light-orange: #ffb380;
+  --accent-orange: #ff9f43;
+}
+
 .search-container {
   display: flex;
   justify-content: center;
@@ -27,7 +35,7 @@
 }
 
 .search-input:focus {
-  border-color: #27ae60;
+  border-color: var(--primary-orange);
 }
 
 #search-btn {
@@ -35,7 +43,7 @@
   width: auto;
   white-space: nowrap;
   padding: 0.5rem 1.2rem;
-  background: #27ae60;
+  background: var(--primary-orange);
   color: white;
   border: none;
   border-radius: 24px;
@@ -46,7 +54,7 @@
 }
 
 #search-btn:hover {
-  background: #2ecc71;
+  background: var(--dark-orange);
 }
 
 .visually-hidden {

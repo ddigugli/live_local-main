@@ -56,6 +56,38 @@ function HomePage() {
 
 // registering routes 
 function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+}
+
+function AppContent() {
+  const navigate = useNavigate();
+  const [isInitializing, setIsInitializing] = React.useState(true);
+  const hasInitialized = React.useRef(false);
+
+  // Clear any persisted session on app load - user must sign in every time
+  React.useEffect(() => {
+    // Only run once on initial mount
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
+
+    logout().catch(() => {
+      // ignore errors if already logged out
+    }).finally(() => {
+      setIsInitializing(false);
+      // Force navigation to login after logout completes
+      navigate('/login', { replace: true });
+    });
+  }, [navigate]);
+
+  // Show nothing while initializing
+  if (isInitializing) {
+    return <div></div>;
+  }
+
   // Header placed inside Router so hooks like useNavigate work
   const Header = () => {
     const navigate = useNavigate();
@@ -81,7 +113,7 @@ function App() {
 
     return (
       <header className="App-header">
-        <h1>Live Local</h1>
+        <img src="/livelocal-logo.png" alt="LiveLocal" className="header-logo" />
         {process.env.NODE_ENV !== 'production' && !isParseConfigured && (
           <div className="parse-warning">Parse not configured — running in local/fallback mode</div>
         )}
@@ -108,13 +140,12 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className="App">
-        <Header />
-        <Routes>
-          {/* pages we want to be able to navigate to - in each of these pages we have to import the Link var from react-router-dom to allow for routing to work */}
-          {/* Protect the root route so unauthenticated users are redirected to /login */}
-          <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+    <div className="App">
+      <Header />
+      <Routes>
+        {/* pages we want to be able to navigate to - in each of these pages we have to import the Link var from react-router-dom to allow for routing to work */}
+        {/* Protect the root route so unauthenticated users are redirected to /login */}
+        <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
 
           {/* Protected routes: redirect to /login when user is not authenticated */}
           <Route
@@ -168,8 +199,7 @@ function App() {
           />
         </Routes>
       </div>
-    </Router>
-  );
-}
+    );
+  }
 
 export default App;

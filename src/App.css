@@ -1,6 +1,14 @@
 /* Importing two google fonts to use */
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lobster&display=swap");
 
+/* Orange color scheme to match logo */
+:root {
+  --primary-orange: #f99455;
+  --dark-orange: #f46417;
+  --light-orange: #f6c5a5;
+  --accent-orange: #f7c08d;
+}
+
 .App {
   margin: 0;
   padding: 0;
@@ -15,17 +23,21 @@ h1 {
   font-family: "Lobster", cursive;
   text-align: center;
   margin: 1rem 0;
-  color: #2c3e50;
+  color: var(--primary-orange);
   font-size: 2.5rem;
   text-decoration: underline;
 }
 
 /* navigation / bar at top to go to different pages */
 nav {
-  background: #ffffff;
-  padding: 0.5rem 1rem;
+  background: var(--primary-orange);
+  padding: 0 1rem;
   top: 0;
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
 }
 
 nav li {
@@ -41,6 +53,7 @@ nav ul {
   gap: 2rem;
   margin: 0;
   padding: 0;
+  height: 100%;
 }
 
 nav a {
@@ -49,18 +62,28 @@ nav a {
   font-weight: bold;
   padding: 0.5rem 1.2rem;
   border-radius: 25px;
-  background: #27ae60;
+  background: var(--dark-orange);
   transition: background 0.3s;
 }
 
 nav a:hover {
-  color: #f39c12;
+  background: var(--light-orange);
+  color: white;
 }
 
 .App-header {
   background-color: #f8f9fa;
   padding: 20px;
   color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-logo {
+  max-height: 80px;
+  width: auto;
+  object-fit: contain;
 }
 
 .suggested-section {
@@ -72,7 +95,7 @@ nav a:hover {
 .map-section h2 {
   font-family: "Lobster", cursive;
   margin-bottom: 1rem;
-  color: #34495e;
+  color: var(--primary-orange);
 }
 
 /* responsive design element - columns will adjust based on screen size - CSS grid */
@@ -151,7 +174,7 @@ nav a:hover {
 .parse-warning {
   display: inline-block;
   margin-top: 0.5rem;
-  background: #f39c12;
+  background: var(--dark-orange);
   color: #fff;
   padding: 0.25rem 0.6rem;
   border-radius: 6px;

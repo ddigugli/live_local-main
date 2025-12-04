@@ -96,6 +96,7 @@ nav a:hover {
   font-family: "Lobster", cursive;
   margin-bottom: 1rem;
   color: var(--primary-orange);
+  font-size: 2rem;
 }
 
 /* responsive design element - columns will adjust based on screen size - CSS grid */

@@ -38,25 +38,40 @@ const MapboxMap = () => {
   const [error, setError] = React.useState(null);
   // Business data used for listings and marker creation
   const [businesses, setBusinesses] = React.useState([]);
+  const mapInstanceRef = React.useRef(null);
+  // search bar within the map 
+  const [search, setSearch] = React.useState('');
+  const [noResult, setNoResult] = React.useState(false);
+
+  const geocode = React.useCallback(async (query) => {
+    try {
+      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&limit=1`;
+      const res = await fetch(url);
+      const json = await res.json();
+      const f = json?.features?.[0];
+      if (f && Array.isArray(f.center)) return f.center;
+    } catch (_) {}
+    return null;
+  }, []);
+
+  const onSearch = async (e) => {
+    e.preventDefault();
+    const q = search.trim();
+    if (!q) return;
+    const center = await geocode(q);
+    if (center && mapInstanceRef.current) {
+      setNoResult(false);
+      try { mapInstanceRef.current.flyTo({ center, zoom: 13.5 }); } catch(_) {}
+    } else {
+      setNoResult(true);
+    }
+  };
 
   React.useEffect(() => {
     let map;
     let markers = [];
     let mounted = true;
     let didUserCenter = false;
-
-    // Geocode a free‑form address to [lng, lat] using Mapbox Geocoding API
-
-    const geocode = async (query) => {
-      try {
-        const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&limit=1`;
-        const res = await fetch(url);
-        const json = await res.json();
-        const f = json?.features?.[0];
-        if (f && Array.isArray(f.center)) return f.center;
-      } catch (_) {}
-      return null;
-    };
 
     //  initialize the map, then fetch businesses and add markers
     ensureMapboxAssets()
@@ -70,6 +85,7 @@ const MapboxMap = () => {
           zoom: 12.5,
           style: 'mapbox://styles/mapbox/streets-v12'
         });
+        mapInstanceRef.current = map;
 
         // set start location - If the signed-in user has a location set in their profile, center/zoom to it
         try {
@@ -116,6 +132,7 @@ const MapboxMap = () => {
       mounted = false;
       try { markers.forEach((m) => m.remove()); } catch(_) {}
       try { if (map) map.remove(); } catch(_) {}
+      mapInstanceRef.current = null;
     };
   }, []);
 
@@ -126,6 +143,18 @@ const MapboxMap = () => {
         <div className="mapbox-error">Map failed to load: {error}</div>
       )}
       <aside className="mapbox-sidebar">
+        <form onSubmit={onSearch} className="mapbox-search">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); if (noResult) setNoResult(false); }}
+            placeholder="Enter a city here"
+          />
+          <button type="submit">Go</button>
+        </form>
+        {noResult && (
+          <div className="mapbox-search__nores" aria-live="polite">No results found</div>
+        )}
         {/* Listings header with count */}
         <h3>Local Businesses: {businesses.length}</h3>
         <div>

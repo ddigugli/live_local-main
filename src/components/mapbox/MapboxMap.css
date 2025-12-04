@@ -1,5 +1,5 @@
 /* Student B - mapbox styling from mapbox website tutorial */
-.mapbox-wrapper{width:100%;height:400px;position:relative;display:flex;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.mapbox-wrapper{width:100%;height:600px;position:relative;display:flex;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
 .mapbox-error{position:absolute;top:8px;left:8px;z-index:2;padding:.5rem .75rem;background:#fff;color:crimson;border:1px solid #f3d;border-radius:6px}
 .mapbox-sidebar{width:28%;min-width:220px;height:100%;overflow-y:auto;background:#f4f3e7;padding:.75rem 1rem}
 .mapbox-sidebar h3{margin:0 0 .5rem 0}
